@@ -41,7 +41,7 @@ public class BookListFragment extends Fragment {
 
     private int maxResults = 10;
 
-    private String mtopic = "android";
+    private String mtopic;
 
 
     public BookListFragment() {
@@ -57,6 +57,25 @@ public class BookListFragment extends Fragment {
 
         ArrayList<String> bookList = new ArrayList<String>();
         View rootView = inflater.inflate(R.layout.book_list, container, false);
+       final EditText topicText = (EditText) rootView.findViewById(R.id.book);
+
+
+
+        Button button = (Button) rootView.findViewById(R.id.search);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mtopic = topicText.getText().toString();
+
+                if (mtopic.trim().length() != 0) {
+                    BookListFetchTask bookListFetchTask = new BookListFetchTask();
+                    bookListFetchTask.execute(mtopic);
+
+                }
+            }
+        });
+
 
         ListView listView = (ListView) rootView.findViewById(R.id.book_list_view);
 
@@ -65,8 +84,7 @@ public class BookListFragment extends Fragment {
         listView.setAdapter(mbookAdapter);
 
 
-        BookListFetchTask bookListFetchTask = new BookListFetchTask();
-        bookListFetchTask.execute(mtopic);
+
 
         return rootView;
 
@@ -176,6 +194,7 @@ public class BookListFragment extends Fragment {
             final String OWM_LIST = "items";
 
             JSONObject booklistJson = new JSONObject(bookListJsonStr);
+
             JSONArray items = booklistJson.getJSONArray(OWM_LIST);
 
             String[] resultStrs = new String[maxResults];
